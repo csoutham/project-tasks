@@ -2,7 +2,7 @@
 	<header class="bg-white shadow">
 		<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
 			<h2 class="text-3xl text-gray-800 title">
-				{{ __('Welcome') }}
+				{{ __('Tasks') }}
 			</h2>
 		</div>
 	</header>
@@ -12,9 +12,6 @@
 			<div class="flex flex-row justify-between">
 				<a href="{{ route('login') }}" class="text-lg text-blue-600">
 					{{ __('Login') }}
-				</a>
-				<a href="{{ route('register') }}" class="text-lg text-blue-600">
-					{{ __('Register') }}
 				</a>
 			</div>
 		</div>

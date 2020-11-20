@@ -1,5 +1,5 @@
 const mix = require('laravel-mix');
-const domain = 'laravel.test';
+const domain = 'tasks.test';
 const homedir = require('os').homedir();
 
 require('laravel-mix-tailwind');
