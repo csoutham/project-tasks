@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\TasksController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,3 +17,4 @@ require __DIR__ . '/auth.php';
 
 Route::resource('clients', ClientsController::class);
 Route::resource('projects', ProjectsController::class);
+Route::resource('tasks', TasksController::class);

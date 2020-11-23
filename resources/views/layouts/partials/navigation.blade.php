@@ -19,7 +19,7 @@
                     <x-nav-link href="{{ action('\App\Http\Controllers\ProjectsController@index') }}" :active="request()->is('projects', 'projects/*')">
                         {{ __('Projects') }}
                     </x-nav-link>
-                    <x-nav-link href="{{ action('\App\Http\Controllers\ClientsController@index') }}" :active="request()->is('tasks', 'tasks/*')">
+                    <x-nav-link href="{{ action('\App\Http\Controllers\TasksController@index') }}" :active="request()->is('tasks', 'tasks/*')">
                         {{ __('Tasks') }}
                     </x-nav-link>
                 </div>
@@ -73,7 +73,7 @@
             <x-responsive-nav-link href="{{ action('\App\Http\Controllers\ProjectsController@index') }}" :active="request()->is('projects', 'projects/*')">
                 {{ __('Projects') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ action('\App\Http\Controllers\ClientsController@index') }}" :active="request()->is('tasks', 'tasks/*')">
+            <x-responsive-nav-link href="{{ action('\App\Http\Controllers\TasksController@index') }}" :active="request()->is('tasks', 'tasks/*')">
                 {{ __('Tasks') }}
             </x-responsive-nav-link>
         </div>
