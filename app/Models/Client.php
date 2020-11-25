@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\GeneratesUuid;
+use App\Services\ProjectService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
 {
-	use SoftDeletes, GeneratesUuid;
-
 	const STATUS_LIVE = 'live';
 	const STATUS_ARCHIVED = 'archived';
 
@@ -28,52 +25,34 @@ class Client extends Model
 		'status' => ['required', 'in:live,archived'],
 	];
 
-    protected $table = 'clients';
-    
-	protected $uuidVersion = 'ordered';
-	
-	protected $guarded = [
-	    //
-	];
-	
-	protected $hidden = [
-		'deleted_at',
+	protected $collection = 'clients';
+	protected $guarded = [];
+	protected $hidden = ['deleted_at',];
+	protected $casts = [
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
 	];
 
-    protected $casts = [
-        //
-    ];
-
-    public static function getTableName()
-    {
-        return with(new static)->getTable();
-    }
+	public static function getCollectionName()
+	{
+		return with(new static)->collection;
+	}
 
 	public function getRouteKeyName()
 	{
-		return 'uuid';
+		return 'fid';
 	}
 
-	public function scopeFilterBy($query, $column, $value)
-    {
-        if ((is_null($value) || empty($value)) && $value !== '0') {
-            return $query;
-        }
+	public function save(array $options = [])
+	{
+		return null;
+	}
 
-        return $query->where($column, $value);
-    }
+	public function getProjectsAttribute()
+	{
+		$projectService = resolve(ProjectService::class);
 
-    public function scopeSearchableProperties($query, $search)
-    {
-        if (!$search) {
-            return $query;
-        }
-
-        return $query->where('name', 'like', '%' . $search . '%');
-    }
-    
-    public function projects() {
-    	return $this->hasMany('App\Models\Project');
-    }
+		return $projectService->getProjects('client_id', false, ['equalTo' => $this->fid]);
+	}
 }
 

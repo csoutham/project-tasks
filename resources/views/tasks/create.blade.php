@@ -10,14 +10,40 @@
             <form action="{{ action('\App\Http\Controllers\TasksController@store') }}" method="post">
                 @method('POST')
                 @csrf
+    
+                <div class="flex flex-wrap mb-8">
+                    <div class="w-64">
+                        @include('components.forms.select', [
+                           'label' => __('Project'),
+                           'name' => 'project_id',
+                           'data' => $projects->pluck('name', 'fid'),
+                           'dataWithKeys' => true,
+                           'value' => old('project_id'),
+                           'required' => true,
+                           'errors' => $errors,
+                        ])
+                    </div>
+                </div>
                 
                 <div class="flex flex-wrap mb-6">
                     @include('components.forms.input', [
                        'type' => 'text',
-                       'label' => __('Name'),
-                       'name' => 'name',
-                       'placeholder' => __('Name'),
-                       'value' => old('name'),
+                       'label' => __('Title'),
+                       'name' => 'title',
+                       'placeholder' => __('Title'),
+                       'value' => old('title'),
+                       'required' => true,
+                       'params' => ['minlength' => 4, 'maxlength' => 160],
+                       'errors' => $errors,
+                    ])
+                </div>
+                
+                <div class="flex flex-wrap mb-6">
+                    @include('components.forms.textarea', [
+                       'label' => __('Description'),
+                       'name' => 'description',
+                       'placeholder' => __('Description'),
+                       'value' => old('description'),
                        'required' => true,
                        'params' => ['minlength' => 4, 'maxlength' => 160],
                        'errors' => $errors,

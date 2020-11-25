@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Client;
+use App\Services\ClientService;
 use Livewire\WithPagination;
 
 class ClientsTable extends LivewireHelper
@@ -13,9 +14,10 @@ class ClientsTable extends LivewireHelper
 	public $sortField = 'name';
 	public $sortAsc = true;
 	public $status = Client::STATUS_LIVE;
-	public $search = '';
 
 	protected $queryString = ['status'];
+
+	protected $clientService;
 
 	public function updatingSearch()
 	{
@@ -33,15 +35,14 @@ class ClientsTable extends LivewireHelper
 		$this->sortField = $field;
 	}
 
-	public function render()
+	public function render(ClientService $clientService)
 	{
-		$clients = Client::searchableProperties($this->search)
-		                 ->filterBy('status', $this->status)
-		                 ->with('projects')
-		                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-		                 ->get();
-
 		$statuses = Client::STATUSES;
+
+		$clients = $clientService->getClients();
+
+		$clients = $clientService->filterBy($clients, 'status', $this->status);
+		$clients = ($this->sortAsc) ? $clients->sortBy($this->sortField) : $clients->sortByDesc($this->sortField);
 
 		$clients = $this->paginateCollection($clients, $this->perPage);
 

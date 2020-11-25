@@ -11,25 +11,32 @@ use App\Http\Requests\Projects\ProjectStoreRequest;
 use App\Http\Requests\Projects\ProjectUpdateRequest;
 use App\Models\Client;
 use App\Models\Project;
+use App\Services\ClientService;
+use App\Services\ProjectService;
 
 class ProjectsController extends Controller
 {
+	protected $projectService;
+
+	public function __construct(ProjectService $projectService)
+	{
+		$this->projectService = $projectService;
+	}
+
 	public function index(ProjectIndexRequest $request)
 	{
 		return view('projects.index');
 	}
 
-	public function create(ProjectCreateRequest $request)
+	public function create(ClientService $clientService, ProjectCreateRequest $request)
 	{
-		$clients = Client::where('status', Client::STATUS_LIVE)
-		                 ->orderBy('name')
-		                 ->get();
-		
+		$clients = $clientService->getClients();
+
 		$statuses = Project::STATUSES;
 
 		return view('projects.create')->with([
 			'clients' => $clients,
-			'statuses' => $statuses
+			'statuses' => $statuses,
 		]);
 	}
 
@@ -37,7 +44,7 @@ class ProjectsController extends Controller
 	{
 		$validated = $request->validated();
 
-		Project::create($validated);
+		$this->projectService->createProject(Project::create($validated));
 
 		return redirect()->action('\App\Http\Controllers\ProjectsController@index')->with('success', 'You have successfully created a project.');
 	}
@@ -51,13 +58,13 @@ class ProjectsController extends Controller
 	{
 		$clients = Client::orderBy('name')
 		                 ->get();
-		
+
 		$statuses = Project::STATUSES;
 
 		return view('projects.edit')->with([
 			'clients' => $clients,
 			'project' => $project,
-			'statuses' => $statuses
+			'statuses' => $statuses,
 		]);
 	}
 

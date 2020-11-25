@@ -16,7 +16,7 @@
                         @include('components.forms.select', [
                            'label' => __('Client'),
                            'name' => 'client_id',
-                           'data' => $clients->pluck('name', 'id'),
+                           'data' => $clients->pluck('name', 'fid'),
                            'dataWithKeys' => true,
                            'value' => old('client_id'),
                            'required' => true,

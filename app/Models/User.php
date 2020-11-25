@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use OwenIt\Auditing\Contracts\Auditable;
 
-class User extends Authenticatable implements MustVerifyEmail, Auditable
+class User extends Authenticatable implements MustVerifyEmail
 {
 	use HasApiTokens;
 	use HasFactory;
 	use Notifiable;
-	use GeneratesUuid;
-	use \OwenIt\Auditing\Auditable;
 
 	protected $table = 'users';
 	protected $uuidVersion = 'ordered';
@@ -65,29 +61,5 @@ class User extends Authenticatable implements MustVerifyEmail, Auditable
 	public static function getTableName()
 	{
 		return with(new static)->getTable();
-	}
-
-	public function getRouteKeyName()
-	{
-		return 'uuid';
-	}
-
-	public function scopeFilterBy($query, $column, $value)
-	{
-		if (!$value) {
-			return $query;
-		}
-
-		return $query->where($column, $value);
-	}
-
-	public function scopeSearchableProperties($query, $search)
-	{
-		if (!$search) {
-			return $query;
-		}
-
-		return $query->where('name', 'like', '%' . $search . '%')
-		             ->orWhere('email', 'like', '%' . $search . '%');
 	}
 }

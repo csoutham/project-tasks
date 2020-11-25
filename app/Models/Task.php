@@ -2,15 +2,10 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Tags\HasTags;
 
 class Task extends Model
 {
-	use SoftDeletes, GeneratesUuid, HasTags;
-
 	const STATUS_DRAFT = 'draft';
 	const STATUS_BACKLOG = 'backlog';
 	const STATUS_PROGRESS = 'progress';
@@ -28,59 +23,40 @@ class Task extends Model
 	];
 
 	public static $createRules = [
+		'project_id' => ['required', 'string'],
 		'title' => ['required', 'string', 'min:4', 'max:160'],
 		'description' => ['required', 'string', 'min:4'],
 		'status' => ['required', 'in:draft,backlog,progress,review,completed,archived'],
 	];
 
 	public static $updateRules = [
+		'project_id' => ['required', 'string'],
 		'title' => ['required', 'string', 'min:4', 'max:160'],
 		'description' => ['required', 'string', 'min:4'],
-        'status' => ['required', 'in:draft,backlog,progress,review,completed,archived'],
+		'status' => ['required', 'in:draft,backlog,progress,review,completed,archived'],
 	];
 
-    protected $table = 'tasks';
-    
-	protected $uuidVersion = 'ordered';
-	
-	protected $guarded = [
-	    //
-	];
-	
-	protected $hidden = [
-		'deleted_at',
+	protected $collection = 'tasks';
+	protected $guarded = [];
+	protected $hidden = ['deleted_at',];
+	protected $casts = [
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
 	];
 
-    protected $casts = [
-        //
-    ];
-
-    public static function getTableName()
-    {
-        return with(new static)->getTable();
-    }
+	public static function getCollectionName()
+	{
+		return with(new static)->collection;
+	}
 
 	public function getRouteKeyName()
 	{
-		return 'uuid';
+		return 'fid';
 	}
 
-	public function scopeFilterBy($query, $column, $value)
-    {
-        if ((is_null($value) || empty($value)) && $value !== '0') {
-            return $query;
-        }
-
-        return $query->where($column, $value);
-    }
-
-    public function scopeSearchableProperties($query, $search)
-    {
-        if (!$search) {
-            return $query;
-        }
-
-        return $query->where('name', 'like', '%' . $search . '%');
-    }
+	public function save(array $options = [])
+	{
+		return null;
+	}
 }
 

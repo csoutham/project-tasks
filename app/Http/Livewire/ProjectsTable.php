@@ -2,8 +2,9 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Client;
 use App\Models\Project;
+use App\Services\ClientService;
+use App\Services\ProjectService;
 use Livewire\WithPagination;
 
 class ProjectsTable extends LivewireHelper
@@ -15,9 +16,8 @@ class ProjectsTable extends LivewireHelper
 	public $sortAsc = true;
 	public $client = null;
 	public $status = Project::STATUS_LIVE;
-	public $search = '';
 
-	protected $queryString = ['status'];
+	protected $queryString = ['client', 'status'];
 
 	public function updatingSearch()
 	{
@@ -35,18 +35,16 @@ class ProjectsTable extends LivewireHelper
 		$this->sortField = $field;
 	}
 
-	public function render()
+	public function render(ClientService $clientService, ProjectService $projectService)
 	{
-		$clients = Client::where('status', Client::STATUS_LIVE)->orderBy('name')->get();
-
-		$projects = Project::searchableProperties($this->search)
-		                   ->filterBy('client_id', $this->client)
-		                   ->filterBy('status', $this->status)
-		                   ->with('client')
-		                   ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-		                   ->get();
-
+		$clients = $clientService->getClients();
 		$statuses = Project::STATUSES;
+
+		$projects = $projectService->getProjects();
+
+		$projects = $projectService->filterBy($projects, 'client_id', $this->client);
+		$projects = $projectService->filterBy($projects, 'status', $this->status);
+		$projects = ($this->sortAsc) ? $projects->sortBy($this->sortField) : $projects->sortByDesc($this->sortField);
 
 		$projects = $this->paginateCollection($projects, $this->perPage);
 

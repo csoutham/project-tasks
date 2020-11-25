@@ -1,16 +1,5 @@
 <div class="pb-4">
 	<div class="flex flex-row pb-6">
-		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/4">
-			@include('components.forms.input', [
-			   'type' => 'text',
-			   'label' => __('Keywords'),
-			   'name' => 'search',
-			   'placeholder' => __('Search'),
-			   'params' => [
-				   'wire:model' => 'search'
-			   ]
-			])
-		</div>
 		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/5">
 			@include('components.forms.select', [
 			   'label' => __('Status'),
@@ -47,9 +36,9 @@
                     <thead class="text-left border-b border-gray-200 bg-gray-100">
                         <tr>
                             <th class="pl-4 column-header">
-                                Name
+	                            <a wire:click.prevent="sortBy('name')" role="button" href="#">Name</a>
                             </th>
-	                        <th class="column-header" style="width: 160px;">
+	                        <th class="column-header text-center" style="width: 160px;">
 		                        Projects
 	                        </th>
 	                        <th class="column-header" style="width: 160px;">
@@ -69,7 +58,7 @@
                                         {{ $client->name }}
                                     </a>
                                 </td>
-	                            <td class="column-body">
+	                            <td class="column-body text-center">
 		                            {{ $client->projects->count() }}
 	                            </td>
                                 <td class="column-body">

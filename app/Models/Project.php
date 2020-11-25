@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\GeneratesUuid;
+use App\Services\TaskService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-	use SoftDeletes, GeneratesUuid;
-
 	const STATUS_LIVE = 'live';
 	const STATUS_ARCHIVED = 'archived';
 
@@ -19,64 +16,45 @@ class Project extends Model
 	];
 
 	public static $createRules = [
-		'client_id' => ['required', 'integer'],
+		'client_id' => ['required', 'string'],
 		'name' => ['required', 'string', 'min:4', 'max:160'],
 		'status' => ['required', 'in:live,archived'],
 	];
 
 	public static $updateRules = [
-		'client_id' => ['required', 'integer'],
+		'client_id' => ['required', 'string'],
 		'name' => ['required', 'string', 'min:4', 'max:160'],
 		'status' => ['required', 'in:live,archived'],
 	];
 
-	protected $table = 'projects';
-
-	protected $uuidVersion = 'ordered';
-
-	protected $guarded = [
-		//
-	];
-
-	protected $hidden = [
-		'deleted_at',
-	];
-
+	protected $collection = 'projects';
+	protected $guarded = [];
+	protected $hidden = ['deleted_at',];
 	protected $casts = [
-		//
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
 	];
 
-	public static function getTableName()
+	public static function getCollectionName()
 	{
-		return with(new static)->getTable();
+		return with(new static)->collection;
 	}
 
 	public function getRouteKeyName()
 	{
-		return 'uuid';
+		return 'fid';
 	}
 
-	public function scopeFilterBy($query, $column, $value)
+	public function save(array $options = [])
 	{
-		if ((is_null($value) || empty($value)) && $value !== '0') {
-			return $query;
-		}
-
-		return $query->where($column, $value);
+		return null;
 	}
 
-	public function scopeSearchableProperties($query, $search)
+	public function getTasksAttribute()
 	{
-		if (!$search) {
-			return $query;
-		}
+		$taskService = resolve(TaskService::class);
 
-		return $query->where('name', 'like', '%' . $search . '%');
-	}
-
-	public function client()
-	{
-		return $this->belongsTo('App\Models\Client');
+		return $taskService->getTasks('project_id', false, ['equalTo' => $this->fid]);
 	}
 }
 

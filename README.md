@@ -1,4 +1,5 @@
-# Laravel TALL Boilerplate
+# Tasks
+An experimental project to use Laravel, Livewire and Firebase Realtime Database.
 
 ### Backend
  - Laravel
@@ -6,9 +7,7 @@
  - Blade UI Kit
  - Caleb Porzio's Awesome Helpers
  - Laravel Sanctum
- - Laravel Socialite
  - Predis
-
  - Laravel Debugbar
  - HELO Helper Package
  - Laravel Horizon
@@ -17,6 +16,3 @@
  ### Frontend
  - Tailwind CSS
  - AlpineJS
- - Tailwind UI
- - Tailwind Typography
- - Tailwind Forms

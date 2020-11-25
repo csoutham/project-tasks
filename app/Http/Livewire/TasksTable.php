@@ -2,8 +2,9 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Livewire\LivewireHelper;
 use App\Models\Task;
+use App\Services\ProjectService;
+use App\Services\TaskService;
 use Livewire\WithPagination;
 
 class TasksTable extends LivewireHelper
@@ -13,10 +14,10 @@ class TasksTable extends LivewireHelper
 	public $perPage = 30;
 	public $sortField = 'title';
 	public $sortAsc = true;
+	public $project = null;
 	public $status = null;
-	public $search = '';
 
-	protected $queryString = ['status'];
+	protected $queryString = ['project', 'status'];
 
 	public function updatingSearch()
 	{
@@ -34,21 +35,24 @@ class TasksTable extends LivewireHelper
 		$this->sortField = $field;
 	}
 
-	public function render()
+	public function render(ProjectService $projectService, TaskService $taskService)
 	{
-		$tasks = Task::searchableProperties($this->search)
-		                         ->filterBy('status', $this->status)
-		                         ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-		                         ->get();
-		                         
-        $statuses = Task::STATUSES;
+		$projects = $projectService->getProjects();
+		$statuses = Task::STATUSES;
+
+		$tasks = $taskService->getTasks();
+
+		$tasks = $taskService->filterBy($tasks, 'project_id', $this->project);
+		$tasks = $taskService->filterBy($tasks, 'status', $this->status);
+		$tasks = ($this->sortAsc) ? $tasks->sortBy($this->sortField) : $tasks->sortByDesc($this->sortField);
 
 		$tasks = $this->paginateCollection($tasks, $this->perPage);
 
 		return view('livewire.tasks-table')->with([
-		    'tasks' => $tasks,
-		    'statuses' => $statuses,
-        ]);
+			'projects' => $projects,
+			'tasks' => $tasks,
+			'statuses' => $statuses,
+		]);
 	}
 
 	public function paginationView()

@@ -1,21 +1,10 @@
 <div class="pb-4">
 	<div class="flex flex-row pb-6">
-		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/4">
-			@include('components.forms.input', [
-			   'type' => 'text',
-			   'label' => __('Keywords'),
-			   'name' => 'search',
-			   'placeholder' => __('Search'),
-			   'params' => [
-				   'wire:model' => 'search'
-			   ]
-			])
-		</div>
 		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/3">
 			@include('components.forms.select', [
 			   'label' => __('Client'),
 				'name' => 'client',
-				'data' => $clients->pluck('name', 'id'),
+				'data' => $clients->pluck('name', 'fid'),
 				'dataWithKeys' => true,
 				'nullValue' => 'Any',
 				'value' => null,
@@ -39,7 +28,7 @@
 			])
 		</div>
 		
-		<div class="w-full self-center hidden lg:block">
+		<div class="self-center hidden w-full lg:block">
 			<p class="mt-5 text-sm text-right lg:text-sm">
 				Showing @if ($projects->total() != 0)
 					{{ $projects->firstItem() }} to {{ $projects->lastItem() }} of
@@ -50,7 +39,7 @@
 	</div>
 	
 	@if ($projects->total() === 0)
-		<div class="flex h-32 px-6 py-6 bg-white border border-gray-200 justify-center items-center rounded-lg">
+		<div class="flex items-center justify-center h-32 px-6 py-6 bg-white border border-gray-200 rounded-lg">
             <h3 class="text-sm text-gray-600">No results found, please try different filters.</h3>
         </div>
 	
@@ -58,14 +47,17 @@
 		<div class="flex flex-col">
             <div class="pb-12 overflow-x-auto">
                 <table class="min-w-full table-fixed">
-                    <thead class="text-left border-b border-gray-200 bg-gray-100">
+                    <thead class="text-left bg-gray-100 border-b border-gray-200">
                         <tr>
                             <th class="pl-4 column-header">
-                                Name
+	                            <a wire:click.prevent="sortBy('name')" role="button" href="#">Name</a>
                             </th>
                             <th class="column-header" style="width: 200px;">
                                 Client
                             </th>
+	                        <th class="column-header text-center" style="width: 160px;">
+		                        Tasks
+	                        </th>
                             <th class="column-header" style="width: 160px;">
                                 Status
                             </th>
@@ -79,13 +71,16 @@
                         @foreach ($projects as $project)
                             <tr class="hover:bg-gray-50">
                                 <td class="pl-4 column-body">
-                                    <a href="{{ action('\App\Http\Controllers\ProjectsController@edit', $project) }}" class="text-blue-600 font-semibold">
+                                    <a href="{{ action('\App\Http\Controllers\ProjectsController@edit', $project) }}" class="font-semibold text-blue-600">
                                         {{ $project->name }}
                                     </a>
                                 </td>
 	                            <td class="column-body">
-                                    {{ $project->client->name }}
+									{{ $clients->where('fid', $project->client_id)->first()->name }}
                                 </td>
+	                            <td class="column-body text-center">
+		                            {{ $project->tasks->count() }}
+	                            </td>
                                 <td class="column-body">
                                     <span
                                         class="inline-flex px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">{{ ucfirst($project->status) }}</span>
@@ -93,7 +88,7 @@
                                 <td class="column-body">
                                     {{ $project->created_at->format('d/m/Y H:i') }}
                                 </td>
-                                <td class="column-body text-right pr-4">
+                                <td class="pr-4 text-right column-body">
                                     <form action="{{ action('\App\Http\Controllers\ProjectsController@destroy', $project) }}"
                                           method="post">
                                         @csrf

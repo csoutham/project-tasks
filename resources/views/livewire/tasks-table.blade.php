@@ -1,14 +1,17 @@
 <div class="pb-4">
 	<div class="flex flex-row pb-6">
-		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/4">
-			@include('components.forms.input', [
-			   'type' => 'text',
-			   'label' => __('Keywords'),
-			   'name' => 'search',
-			   'placeholder' => __('Search'),
-			   'params' => [
-				   'wire:model' => 'search'
-			   ]
+		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/3">
+			@include('components.forms.select', [
+			   'label' => __('Project'),
+				'name' => 'project',
+				'data' => $projects->pluck('name', 'fid'),
+				'dataWithKeys' => true,
+				'nullValue' => 'Any',
+				'value' => null,
+				'params' => [
+				   'wire:model' => 'project'
+				],
+				'modifier' => 'ucfirst-values',
 			])
 		</div>
 		<div class="w-1/2 pb-2 pr-2 xl:pr-4 xl:pb-0 lg:w-1/5">
@@ -45,18 +48,21 @@
             <div class="pb-12 overflow-x-auto">
                 <table class="min-w-full table-fixed">
                     <thead class="text-left border-b border-gray-200 bg-gray-100">
-                        <tr>
-                            <th class="pl-4 column-header">
-                                Title
-                            </th>
-                            <th class="column-header">
-                                Status
-                            </th>
-                            <th class="column-header">
-                                Created At
-                            </th>
-                            <th></th>
-                        </tr>
+	                    <tr>
+		                    <th class="pl-4 column-header">
+			                    <a wire:click.prevent="sortBy('title')" role="button" href="#">Title</a>
+		                    </th>
+		                    <th class="column-header" style="width: 200px;">
+			                    Project
+		                    </th>
+		                    <th class="column-header" style="width: 160px;">
+			                    Status
+		                    </th>
+		                    <th class="column-header" style="width: 160px;">
+			                    Created At
+		                    </th>
+		                    <th style="width: 60px;"></th>
+	                    </tr>
                     </thead>
                     <tbody class="divide-y-2 divide-gray-100">
                         @foreach ($tasks as $task)
@@ -66,6 +72,9 @@
                                         {{ $task->title }}
                                     </a>
                                 </td>
+	                            <td class="column-body">
+		                            {{ $projects->where('fid', $task->project_id)->first()->name }}
+	                            </td>
                                 <td class="column-body">
                                     <span
                                         class="inline-flex px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">{{ ucfirst($task->status) }}</span>
